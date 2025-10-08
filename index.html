@@ -1,0 +1,1243 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>HealLink — Multi-Page Animated Demo</title>
+    <meta name="description" content="HealLink — Telehealth multi-page demo with animated page transitions, patient/doctor flows, reports, prescriptions & chat (single-file)" />
+    <style>
+         :root {
+            --bg: #071226;
+            --card: #0b1220;
+            --muted: #94a3b8;
+            --accent: #00d4ff;
+            --accent-2: #7c3aed;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-2: rgba(255, 255, 255, 0.04);
+            --success: #22c55e;
+            --danger: #ef4444;
+            --maxw: 1200px;
+            --radius: 14px;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+        }
+        
+        * {
+            box-sizing: border-box
+        }
+        
+        html,
+        body {
+            height: 100%
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(180deg, #071226 0%, #071a2a 45%, #05131c 100%);
+            color: #e6eef6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
+        }
+        
+        .app {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center
+        }
+        
+        .viewport {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden
+        }
+        
+        .page {
+            position: absolute;
+            inset: 0;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            transition: transform 420ms cubic-bezier(.2, .9, .25, 1), opacity 360ms ease, filter 360ms ease;
+            backface-visibility: hidden
+        }
+        
+        .page.hidden {
+            pointer-events: none;
+            opacity: 0;
+            transform: translateY(20px) scale(.995);
+            filter: blur(2px)
+        }
+        
+        .page.show {
+            opacity: 1;
+            transform: none;
+            filter: none
+        }
+        
+        .wrap {
+            max-width: var(--maxw);
+            width: 100%;
+            margin: 0 auto
+        }
+        
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px
+        }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px
+        }
+        
+        .logo {
+            width: 54px;
+            height: 54px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-2));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 24px rgba(124, 58, 237, 0.18);
+        }
+        
+        h1 {
+            font-size: 1.2rem;
+            margin: 0
+        }
+        
+        .tag {
+            font-size: 0.78rem;
+            color: var(--muted)
+        }
+        /* Buttons */
+        
+        .btn {
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            color: inherit;
+            padding: 10px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: inline-flex;
+            gap: 8px;
+            align-items: center
+        }
+        
+        .btn.primary {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            color: #02111a;
+            font-weight: 600;
+            border: none
+        }
+        
+        .btn.ghost {
+            background: transparent;
+            border: 1px dashed rgba(255, 255, 255, 0.06)
+        }
+        /* Cards & panels */
+        
+        .card {
+            background: linear-gradient(180deg, var(--glass), transparent);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6)
+        }
+        
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 28px;
+            margin-top: 22px
+        }
+        
+        .hero-left h2 {
+            font-size: 2rem;
+            margin: 0 0 8px
+        }
+        
+        .hero-left p {
+            color: var(--muted);
+            margin-top: 6px
+        }
+        /* Features grid */
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 18px
+        }
+        
+        .feature {
+            padding: 12px;
+            border-radius: 12px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.02)
+        }
+        
+        .feature h4 {
+            margin: 0 0 6px
+        }
+        
+        .feature p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 0.92rem
+        }
+        /* Controls bar */
+        
+        .controls {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+        /* Login forms */
+        
+        .auth-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: 20px
+        }
+        
+        .auth-card {
+            padding: 22px;
+            border-radius: 12px
+        }
+        
+        label {
+            display: block;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            color: var(--muted)
+        }
+        
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: transparent;
+            color: inherit
+        }
+        
+        .small {
+            font-size: 0.86rem;
+            color: var(--muted)
+        }
+        
+        .chat-window {
+            height: 420px;
+            overflow: auto;
+            padding: 14px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.02)
+        }
+        
+        .compose {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px
+        }
+        
+        .input {
+            flex: 1;
+            padding: 10px;
+            border-radius: 10px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.03)
+        }
+        
+        .message {
+            max-width: 78%;
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            line-height: 1.3
+        }
+        
+        .message.patient {
+            background: linear-gradient(90deg, #0b2440, rgba(11, 34, 64, 0.6));
+            align-self: flex-end
+        }
+        
+        .message.doctor {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+            border: 1px solid rgba(255, 255, 255, 0.02)
+        }
+        /* Video area */
+        
+        .video-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 10px;
+            border-radius: 10px
+        }
+        
+        video {
+            width: 100%;
+            height: 220px;
+            border-radius: 8px;
+            background: #000
+        }
+        /* Prescription & reports */
+        
+        .prescription {
+            padding: 12px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+            min-height: 120px
+        }
+        
+        .page-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 18px
+        }
+        
+        .fade-in {
+            animation: fadeIn .6s both
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px)
+            }
+            to {
+                opacity: 1;
+                transform: none
+            }
+        }
+        
+        .center-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%
+        }
+        
+        @media (max-width:980px) {
+            .hero {
+                grid-template-columns: 1fr
+            }
+            .auth-grid {
+                grid-template-columns: 1fr
+            }
+            .video-area video {
+                height: 160px
+            }
+            .features {
+                grid-template-columns: repeat(2, 1fr)
+            }
+        }
+        
+        @media (max-width:560px) {
+            .features {
+                grid-template-columns: 1fr
+            }
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px
+            }
+            .page {
+                padding: 14px
+            }
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            transition: transform 180ms
+        }
+        
+        .doctor-card {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            padding: 10px;
+            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            cursor: pointer
+        }
+        
+        .steps {
+            display: flex;
+            gap: 8px;
+            align-items: center
+        }
+        
+        .step {
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06)
+        }
+        
+        .step.active {
+            background: linear-gradient(90deg, var(--accent), var(--accent-2))
+        }
+        
+        .slide-left {
+            transform: translateX(-18px);
+            opacity: 0
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="viewport" id="viewport">
+
+
+            <section class="page show" id="page-landing">
+                <div class="wrap">
+                    <header>
+                        <div class="brand">
+                            <div class="logo">
+                                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:34px;height:34px;filter:drop-shadow(0 6px 16px rgba(0,212,255,0.12));">
+                  <path d="M12 21s-6.5-4.35-9.12-7.03C-0.1 10.44 2.24 6 6.5 6c2.03 0 3 .96 5.5 4.24C14.5 6.96 15.47 6 17.5 6 21.76 6 24.1 10.44 21.12 13.97 18.5 16.65 12 21 12 21z" fill="white" opacity="0.85"/>
+                  <rect x="11" y="7" width="2" height="6" rx="1" fill="#02111a"/>
+                  <rect x="8" y="9" width="6" height="2" rx="1" fill="#02111a"/>
+                </svg>
+                            </div>
+                            <div>
+                                <h1>HealLink</h1>
+                                <div class="tag">Teleconsult • AI Symptom Analyzer • e-Prescriptions</div>
+                            </div>
+                        </div>
+
+                        <div class="controls">
+                            <div class="steps" aria-hidden>
+                                <div class="step active"></div>
+                                <div class="step"></div>
+                                <div class="step"></div>
+                            </div>
+                            <button class="btn" id="landingDemoLogin">Demo Login</button>
+                            <button class="btn primary" id="landingGetStarted">Get Started</button>
+                        </div>
+                    </header>
+
+                    <div class="hero">
+                        <div class="card hero-left">
+                            <h2>Bring healthcare to patient & doctor's fingertips</h2>
+                            <p>Animated multi-page flow: login screens, patient & doctor dashboards, chat & video consult, report uploads and prescription drafting — all in a single-file demo for presentation.</p>
+
+                            <div class="features" style="margin-top:18px">
+                                <div class="feature">
+                                    <h4>AI Symptom Checker</h4>
+                                    <p>Type symptoms naturally — HealLink suggests likely conditions and draft care plan.</p>
+                                </div>
+                                <div class="feature">
+                                    <h4>TeleConsult Room</h4>
+                                    <p>Secure chat & video consult interface with transcript saving and e-prescription drafts.</p>
+                                </div>
+                                <div class="feature">
+                                    <h4>Doctor Dashboard</h4>
+                                    <p>Doctors can view patients, upload reports, create & finalize prescriptions.</p>
+                                </div>
+                            </div>
+
+                            <div style="margin-top:18px;display:flex;gap:10px;align-items:center">
+                                <button class="btn primary" id="gotoConsult">Start Consult (Patient)</button>
+                                <button class="btn" id="openSymLanding">AI Symptom Analyzer</button>
+                                <div style="margin-left:12px;color:var(--muted);font-size:0.9rem">Presentation-ready • Works fully in browser</div>
+                            </div>
+
+                        </div>
+
+                        <aside class="card symptom-check">
+                            <div style="display:flex;justify-content:space-between;align-items:center">
+                                <div>
+                                    <strong>Quick AI Symptom Analyzer</strong>
+                                    <div class="small">Paste symptoms or speak (mic) — get suggested diagnoses & a draft prescription</div>
+                                </div>
+                                <div style="display:flex;gap:8px">
+                                    <button class="btn" id="landingMic">🎤</button>
+                                    <button class="btn" id="landingClear">Clear</button>
+                                </div>
+                            </div>
+
+                            <textarea id="landingSymptomInput" placeholder="e.g. I have fever, sore throat, cough and body ache since 2 days..." style="margin-top:10px;min-height:110px"></textarea>
+                            <div style="display:flex;gap:8px;margin-top:8px">
+                                <button class="btn primary" id="landingAnalyze">Analyze</button>
+                                <button class="btn" id="landingExplain">Explain Diagnosis</button>
+                            </div>
+
+                            <div id="landingAnalysisResult" class="card" style="margin-top:10px;padding:12px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);">
+                                <div class="small">Result will appear here after analysis</div>
+                            </div>
+
+                        </aside>
+
+                    </div>
+
+                    <div class="page-footer">
+                        <div class="small">HealLink • Demo UI — Multi-page animated single file</div>
+                        <div>
+                            <button class="btn" id="toDoctorLogin">Doctor Login</button>
+                            <button class="btn primary" id="toPatientLogin">Patient Login</button>
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+            <section class="page hidden" id="page-patient-login">
+                <div class="wrap center-box">
+                    <div style="width:720px;max-width:96%">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                            <div>
+                                <h2 style="margin:0">Patient Login</h2>
+                                <div class="small">Sign in to start a consult or manage your appointments</div>
+                            </div>
+                            <div>
+                                <button class="btn" id="backFromPatient">Back</button>
+                            </div>
+                        </div>
+
+                        <div class="card auth-card" style="margin-top:16px">
+                            <label>Email or phone</label>
+                            <input id="patientEmail" placeholder="you@example.com or +9198xxxx" />
+                            <label style="margin-top:10px">Password</label>
+                            <input id="patientPass" type="password" placeholder="Password for demo" />
+
+                            <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+                                <button class="btn primary" id="patientLoginBtn">Login (Demo)</button>
+                                <button class="btn" id="patientSignupBtn">Create Account</button>
+                                <div style="margin-left:auto;color:var(--muted);font-size:0.9rem">Demo only — data saved in browser</div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+                            <button class="btn" id="patientContinueGuest">Continue as Guest</button>
+                            <button class="btn" id="toReportsFromPatient">Go to Reports</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page hidden" id="page-doctor-login">
+                <div class="wrap center-box">
+                    <div style="width:720px;max-width:96%">
+                        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+                            <div>
+                                <h2 style="margin:0">Doctor Login</h2>
+                                <div class="small">Sign in to manage patients, view reports and prescribe</div>
+                            </div>
+                            <div>
+                                <button class="btn" id="backFromDoctor">Back</button>
+                            </div>
+                        </div>
+
+                        <div class="card auth-card" style="margin-top:16px">
+                            <label>Doctor ID</label>
+                            <input id="doctorId" placeholder="DR-12345" />
+                            <label style="margin-top:10px">Password</label>
+                            <input id="doctorPass" type="password" placeholder="Password for demo" />
+
+                            <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+                                <button class="btn primary" id="doctorLoginBtn">Login (Demo)</button>
+                                <button class="btn" id="doctorSignupBtn">Create Account</button>
+                                <div style="margin-left:auto;color:var(--muted);font-size:0.9rem">Demo only — no backend</div>
+                            </div>
+                        </div>
+
+                        <div style="display:flex;gap:12px;margin-top:12px;justify-content:center">
+                            <button class="btn" id="doctorGotoDashboard">Go to Doctor Dashboard</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="page hidden" id="page-patient-dashboard">
+                <div class="wrap">
+                    <header style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Patient Dashboard</strong>
+                            <div class="small">Welcome, <span id="patientNameDisplay">Guest</span></div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <button class="btn" id="patientToChat">Start Chat</button>
+                            <button class="btn" id="patientToVideo">Video Consult</button>
+                            <button class="btn" id="patientToReports">My Reports</button>
+                            <button class="btn" id="patientLogout">Logout</button>
+                        </div>
+                    </header>
+
+                    <div style="display:grid;grid-template-columns:2fr 1fr;gap:18px">
+                        <div class="card">
+                            <h3>Quick Actions</h3>
+                            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+                                <button class="btn" id="qaSymptoms">Analyze Symptoms</button>
+                                <button class="btn" id="qaBookAppt">Book Appointment</button>
+                                <button class="btn" id="qaUploadReport">Upload Report</button>
+                            </div>
+
+                            <div style="margin-top:14px">
+                                <h4>Recent Conversations</h4>
+                                <div id="patientRecentConversations" style="margin-top:8px;color:var(--muted)"></div>
+                            </div>
+                        </div>
+
+                        <aside class="card">
+                            <h4>Upcoming Appointment</h4>
+                            <div id="patientApptBox" class="small" style="margin-top:8px;color:var(--muted)">No appointments</div>
+
+                            <div style="margin-top:12px">
+                                <h4>Uploaded Reports</h4>
+                                <div id="patientReportsList" class="small" style="margin-top:8px;color:var(--muted)">No reports</div>
+                            </div>
+                        </aside>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Page: Doctor Dashboard -->
+            <section class="page hidden" id="page-doctor-dashboard">
+                <div class="wrap">
+                    <header style="display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Doctor Dashboard</strong>
+                            <div class="small">Welcome, <span id="doctorNameDisplay">Dr. Demo</span></div>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center">
+                            <button class="btn" id="doctorToPatients">Patients</button>
+                            <button class="btn" id="doctorToReports">Reports</button>
+                            <button class="btn" id="doctorLogout">Logout</button>
+                        </div>
+                    </header>
+
+                    <div style="display:grid;grid-template-columns:1fr 380px;gap:12px;margin-top:12px">
+                        <div class="card">
+                            <h4>Active Consultations</h4>
+                            <div id="doctorActiveConvos" style="margin-top:8px"></div>
+                        </div>
+
+                        <aside class="card">
+                            <h4>Today</h4>
+                            <div id="doctorTodayBox" class="small" style="margin-top:8px;color:var(--muted)">No events</div>
+                        </aside>
+                    </div>
+                </div>
+            </section>
+            <section class="page hidden" id="page-chat">
+                <div class="wrap">
+                    <header style="display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Consult Room</strong>
+                            <div class="small">Patient: <span id="chatUser">Guest</span> • Role: <span id="chatRole">Patient</span></div>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn" id="chatBack">Back</button>
+                            <button class="btn" id="chatSave">Save Transcript</button>
+                        </div>
+                    </header>
+
+                    <div class="card" style="margin-top:12px;display:flex;flex-direction:column">
+                        <div class="chat-window" id="chatWindow"></div>
+                        <div class="compose" style="margin-top:10px">
+                            <input class="input" id="messageInput" placeholder="Type message or symptoms..." />
+                            <button class="btn primary" id="sendMsg">Send</button>
+                        </div>
+                    </div>
+
+                    <div style="display:flex;gap:12px;margin-top:12px">
+                        <button class="btn" id="generateRxBtn">Generate Prescription (AI)</button>
+                        <button class="btn" id="goToPrescription">Open Prescription Panel</button>
+                        <button class="btn" id="openVideoFromChat">Open Video</button>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Page: Video Consultation -->
+            <section class="page hidden" id="page-video">
+                <div class="wrap">
+                    <header style="display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Video Consultation</strong>
+                            <div class="small">Camera preview (no signaling in demo)</div>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn" id="videoBack">Back</button>
+                        </div>
+                    </header>
+
+                    <div class="card" style="margin-top:12px">
+                        <div class="video-area">
+                            <video id="localVideo" autoplay muted playsinline></video>
+                            <video id="remoteVideo" autoplay playsinline></video>
+                        </div>
+                        <div style="display:flex;gap:8px;margin-top:8px">
+                            <button class="btn" id="startVideo">Start Camera</button>
+                            <button class="btn" id="shareScreen">Share Screen</button>
+                            <button class="btn" id="stopVideo">Stop</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page: Prescription Editor -->
+            <section class="page hidden" id="page-prescription">
+                <div class="wrap">
+                    <header style="display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Prescription Draft</strong>
+                            <div class="small">Edit and finalize e-prescriptions</div>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn" id="presBack">Back</button>
+                            <button class="btn primary" id="presFinalize">Finalize & Send</button>
+                        </div>
+                    </header>
+
+                    <div class="card" style="margin-top:12px">
+                        <div>
+                            <label>Patient</label>
+                            <input id="presPatient" />
+                            <label style="margin-top:8px">Diagnosis</label>
+                            <textarea id="presDiagnosis" style="min-height:80px"></textarea>
+                            <label style="margin-top:8px">Medicines (one per line)</label>
+                            <textarea id="presMeds" style="min-height:90px"></textarea>
+                            <label style="margin-top:8px">Notes</label>
+                            <textarea id="presNotes" style="min-height:80px"></textarea>
+
+                            <div style="display:flex;gap:8px;margin-top:12px">
+                                <button class="btn" id="presSaveDraft">Save Draft</button>
+                                <button class="btn" id="presClear">Clear</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:12px">
+                            <h4>Preview</h4>
+                            <div id="presPreview" class="small" style="color:var(--muted);white-space:pre-wrap"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page: Reports Upload & List -->
+            <section class="page hidden" id="page-reports">
+                <div class="wrap">
+                    <header style="display:flex;align-items:center;justify-content:space-between">
+                        <div>
+                            <strong>Reports & Uploads</strong>
+                            <div class="small">Attach medical reports or images</div>
+                        </div>
+                        <div style="display:flex;gap:8px">
+                            <button class="btn" id="reportsBack">Back</button>
+                        </div>
+                    </header>
+
+                    <div class="card" style="margin-top:12px">
+                        <input type="file" id="reportUpload" />
+                        <div id="uploadedList" style="margin-top:10px;color:var(--muted)"></div>
+                        <div style="margin-top:12px">
+                            <h4>Patient Reports</h4>
+                            <div id="reportsList" class="small" style="margin-top:8px;color:var(--muted)">No reports</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <footer style="position:absolute;left:12px;bottom:12px;color:var(--muted);font-size:0.85rem">HealLink Demo — Multi-page • Demo storage: localStorage</footer>
+
+        </div>
+    </div>
+
+    <script>
+        const pages = Array.from(document.querySelectorAll('.page'));
+
+        function showPage(id) {
+            pages.forEach(p => {
+                if (p.id === id) {
+                    p.classList.remove('hidden');
+                    p.classList.add('show');
+                } else {
+                    p.classList.remove('show');
+                    p.classList.add('hidden');
+                }
+            });
+            // small accessibility focus
+            setTimeout(() => {
+                const first = document.querySelector('#' + id + ' input, #' + id + ' textarea, #' + id + ' button');
+                if (first) first.focus();
+            }, 260);
+        }
+
+        // initial
+        showPage('page-landing');
+
+        // Navigation bindings
+        document.getElementById('landingDemoLogin').addEventListener('click', () => {
+            alert('Demo login: you are now logged in as "Guest Patient".');
+            document.getElementById('patientNameDisplay').textContent = 'Guest Patient';
+            showPage('page-patient-dashboard');
+        });
+        document.getElementById('landingGetStarted').addEventListener('click', () => {
+            showPage('page-patient-login');
+        });
+        document.getElementById('toDoctorLogin').addEventListener('click', () => showPage('page-doctor-login'));
+        document.getElementById('toPatientLogin').addEventListener('click', () => showPage('page-patient-login'));
+        document.getElementById('backFromPatient').addEventListener('click', () => showPage('page-landing'));
+        document.getElementById('backFromDoctor').addEventListener('click', () => showPage('page-landing'));
+
+        document.getElementById('patientLoginBtn').addEventListener('click', () => {
+            const name = document.getElementById('patientEmail').value || 'Guest';
+            document.getElementById('patientNameDisplay').textContent = name;
+            alert('Logged in as ' + name + ' (demo)');
+            showPage('page-patient-dashboard');
+        });
+
+        document.getElementById('doctorLoginBtn').addEventListener('click', () => {
+            const id = document.getElementById('doctorId').value || 'DR-DEMO';
+            document.getElementById('doctorNameDisplay').textContent = id;
+            alert('Doctor logged in: ' + id);
+            showPage('page-doctor-dashboard');
+        });
+
+        // quick landing actions
+        document.getElementById('openSymLanding').addEventListener('click', () => {
+            document.getElementById('landingSymptomInput').focus();
+        });
+        document.getElementById('gotoConsult').addEventListener('click', () => {
+            showPage('page-patient-dashboard');
+            document.getElementById('patientToChat').focus();
+        });
+
+        // patient dashboard actions
+        document.getElementById('patientToChat').addEventListener('click', () => {
+            showPage('page-chat');
+        });
+        document.getElementById('patientToVideo').addEventListener('click', () => {
+            showPage('page-video');
+        });
+        document.getElementById('patientToReports').addEventListener('click', () => {
+            showPage('page-reports');
+        });
+        document.getElementById('patientLogout').addEventListener('click', () => {
+            if (confirm('Logout?')) showPage('page-landing');
+        });
+
+        // doctor dashboard actions
+        document.getElementById('doctorToPatients').addEventListener('click', () => {
+            alert('Patients list — demo placeholder');
+        });
+        document.getElementById('doctorToReports').addEventListener('click', () => {
+            showPage('page-reports');
+        });
+        document.getElementById('doctorLogout').addEventListener('click', () => {
+            if (confirm('Logout?')) showPage('page-landing');
+        });
+
+        // chat navigation
+        document.getElementById('chatBack').addEventListener('click', () => showPage('page-patient-dashboard'));
+        document.getElementById('chatSave').addEventListener('click', () => saveTranscript());
+
+        // video navigation
+        document.getElementById('videoBack').addEventListener('click', () => showPage('page-patient-dashboard'));
+
+        // prescription page nav
+        document.getElementById('goToPrescription').addEventListener('click', () => showPage('page-prescription'));
+        document.getElementById('presBack').addEventListener('click', () => showPage('page-chat'));
+
+        // reports nav
+        document.getElementById('reportsBack').addEventListener('click', () => showPage('page-patient-dashboard'));
+        const doctors = [{
+            id: 'd1',
+            name: 'Dr. Priya Sharma',
+            spec: 'General Physician',
+            exp: 8,
+            avatar: 'PS'
+        }, {
+            id: 'd2',
+            name: 'Dr. Arun Mehta',
+            spec: 'Pulmonologist',
+            exp: 12,
+            avatar: 'AM'
+        }, {
+            id: 'd3',
+            name: 'Dr. Kavya Rao',
+            spec: 'Psychiatrist',
+            exp: 6,
+            avatar: 'KR'
+        }, {
+            id: 'd4',
+            name: 'Dr. Sameer Khan',
+            spec: 'Dermatologist',
+            exp: 9,
+            avatar: 'SK'
+        }, ];
+
+
+        const MESSAGE_KEY = 'heallink_messages_v2_multi';
+
+        function loadMessages() {
+            try {
+                return JSON.parse(localStorage.getItem(MESSAGE_KEY) || '{}')
+            } catch (e) {
+                return {}
+            }
+        }
+
+        function saveMessages(msgs) {
+            localStorage.setItem(MESSAGE_KEY, JSON.stringify(msgs));
+        }
+
+
+        // Send demo
+        function seedDemo() {
+            const msgs = loadMessages();
+            if (!msgs['d1']) {
+                msgs['d1'] = [{
+                    fromRole: 'patient',
+                    fromName: 'You',
+                    text: 'Hi doctor — I have fever and body ache since yesterday',
+                    ts: Date.now() - 1000 * 60 * 60
+                }, {
+                    fromRole: 'doctor',
+                    fromName: 'Dr. Priya Sharma',
+                    text: 'Thanks — please check your temperature. Any cough or breathing difficulty?',
+                    ts: Date.now() - 1000 * 60 * 50
+                }, ];
+                saveMessages(msgs);
+            }
+        }
+        seedDemo();
+        //import TensorFlow.js
+        let currentChatWith = doctors[0];
+        const chatWindow = document.getElementById('chatWindow');
+
+        function renderChat() {
+            const msgs = loadMessages();
+            const conv = msgs[currentChatWith.id] || [];
+            chatWindow.innerHTML = '';
+            conv.forEach(m => {
+                const mEl = document.createElement('div');
+                mEl.className = 'message ' + (m.fromRole === 'patient' ? 'patient' : 'doctor');
+                mEl.innerHTML = `<div class="meta" style="font-size:0.78rem;color:var(--muted);margin-bottom:6px">${m.fromName} • ${new Date(m.ts).toLocaleString()}</div><div>${escapeHtml(m.text)}</div>`;
+                chatWindow.appendChild(mEl);
+            });
+            chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        renderChat();
+
+        function sendMessage(text, fromRole = 'patient') {
+            if (!currentChatWith) {
+                alert('No doctor selected');
+                return
+            }
+            const msgs = loadMessages();
+            msgs[currentChatWith.id] = msgs[currentChatWith.id] || [];
+            msgs[currentChatWith.id].push({
+                fromRole,
+                fromName: fromRole === 'patient' ? 'You' : currentChatWith.name,
+                text,
+                ts: Date.now()
+            });
+            saveMessages(msgs);
+            renderChat();
+            if (fromRole === 'patient') {
+                setTimeout(() => {
+                    const aiReply = generateDoctorAutoReply(text);
+                    msgs[currentChatWith.id].push({
+                        fromRole: 'doctor',
+                        fromName: currentChatWith.name,
+                        text: aiReply,
+                        ts: Date.now()
+                    });
+                    saveMessages(msgs);
+                    renderChat();
+                }, 900 + Math.random() * 700);
+            }
+        }
+
+        document.getElementById('sendMsg').addEventListener('click', () => {
+            const t = document.getElementById('messageInput').value.trim();
+            if (!t) return;
+            sendMessage(t, 'patient');
+            document.getElementById('messageInput').value = '';
+        });
+        document.getElementById('messageInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                document.getElementById('sendMsg').click();
+            }
+        });
+
+        // Save transcript
+        function saveTranscript() {
+            const msgs = loadMessages()[currentChatWith.id] || [];
+            const text = msgs.map(m => `${new Date(m.ts).toLocaleString()} | ${m.fromName}: ${m.text}`).join('\n\n');
+            const blob = new Blob([text], {
+                type: 'text/plain'
+            });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `transcript_${currentChatWith.id}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Appointments
+        const APPT_KEY = 'heallink_appts_v2';
+
+        function loadAppts() {
+            try {
+                return JSON.parse(localStorage.getItem(APPT_KEY) || '[]')
+            } catch (e) {
+                return []
+            }
+        }
+
+        function saveAppts(a) {
+            localStorage.setItem(APPT_KEY, JSON.stringify(a));
+        }
+
+        // Reports upload handling
+        document.getElementById('reportUpload').addEventListener('change', (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const uploaded = JSON.parse(localStorage.getItem('heallink_reports_v2') || '[]');
+            uploaded.push({
+                name: f.name,
+                size: f.size,
+                ts: Date.now()
+            });
+            localStorage.setItem('heallink_reports_v2', JSON.stringify(uploaded));
+            renderReports();
+        });
+
+        function renderReports() {
+            const list = JSON.parse(localStorage.getItem('heallink_reports_v2') || '[]');
+            document.getElementById('reportsList').innerHTML = list.length ? list.map(r => `<div>${r.name} • ${Math.round(r.size/1024)}KB • ${new Date(r.ts).toLocaleDateString()}</div>`).join('') : 'No reports';
+            document.getElementById('patientReportsList').innerHTML = document.getElementById('reportsList').innerHTML;
+        }
+        renderReports();
+        const analyzerConfig = [{
+            conds: ['fever', 'temperature', 'high fever', 'hot'],
+            diag: 'Possible viral infection or influenza',
+            tags: ['fever', 'viral'],
+            meds: ['Paracetamol 500mg — 1 tablet every 6-8 hrs (as needed)'],
+            'advice': 'Stay hydrated, rest, monitor temperature. Seek urgent care if >39°C or breathing difficulty.'
+        }, {
+            conds: ['cough', 'sore throat', 'coughing', 'phlegm'],
+            diag: 'Upper respiratory tract infection or common cold',
+            tags: ['cough', 'cold'],
+            meds: ['Dextromethorphan (cough syrup) 10ml as needed', 'Warm fluids and throat lozenges'],
+            'advice': 'Steam inhalation, avoid cold exposures. If cough persists >2 weeks see doctor.'
+        }, {
+            conds: ['chest pain', 'pressure in chest', 'tightness in chest'],
+            diag: 'Could be cardiac or pulmonary — seek immediate care',
+            tags: ['urgent', 'cardiac'],
+            meds: [],
+            advice: 'Call emergency services and go to nearest hospital immediately.'
+        }, {
+            conds: ['headache', 'migraine', 'head pain'],
+            diag: 'Tension headache or migraine',
+            tags: ['headache'],
+            meds: ['Ibuprofen 200-400mg if allowed (as per patient history)'],
+            'advice': 'Rest in dark room, avoid screen glare.'
+        }, {
+            conds: ['rash', 'itchy', 'skin', 'red spots', 'skin rash'],
+            diag: 'Dermatological issue — allergic or inflammatory',
+            tags: ['derm'],
+            meds: ['Hydrocortisone 1% cream topical (apply thinly)'],
+            'advice': 'Avoid new products, consult dermatologist if spreading.'
+        }, {
+            conds: ['anxiety', 'depressed', 'sad', 'panic'],
+            diag: 'Psychological distress — consider counseling',
+            tags: ['mental'],
+            meds: [],
+            advice: 'Consider a tele-psychiatry session and breathing exercises.'
+        }, ];
+
+        function analyzeSymptoms(text) {
+            const t = (text || '').toLowerCase();
+            const matches = [];
+            analyzerConfig.forEach(rule => {
+                for (const c of rule.conds) {
+                    if (t.includes(c)) {
+                        matches.push(rule);
+                        break;
+                    }
+                }
+            });
+            if (matches.length === 0) {
+                return {
+                    diag: 'Unclear — needs clinician evaluation',
+                    meds: [],
+                    advice: 'Provide more details: onset, severity, temperature, any chronic conditions, allergies.'
+                }
+            }
+            const unique = Array.from(new Set(matches));
+            const diag = unique.map(m => m.diag).join(' + ');
+            const meds = unique.flatMap(m => m.meds).slice(0, 8);
+            const advice = unique.map(m => m.advice).join('\n');
+            return {
+                diag,
+                meds,
+                advice,
+                matched: unique.map(u => u.tags).flat()
+            }
+        }
+
+        // Landing analyzer
+        document.getElementById('landingAnalyze').addEventListener('click', () => {
+                    const t = document.getElementById('landingSymptomInput').value.trim();
+                    if (!t) {
+                        alert('Type symptoms first');
+                        return
+                    }
+                    const res = analyzeSymptoms(t);
+                    document.getElementById('landingAnalysisResult').innerHTML = `<strong>Suggested:</strong> <div style="margin-top:6px">${escapeHtml(res.diag)}</div><div style="margin-top:8px"><strong>Medications / Advice (Draft):</strong><ul>${res.meds.map(m=>`<li>${escapeHtml(m)}</li>`).join('')}${res.meds.length===0?'<li>No routine medication suggested — seek evaluation</li>':''}</ul></div><div style="margin-top:8px;color:var(--muted)"><pre style="white-space:pre-wrap">${escapeHtml(res.advice)}</pre></div>`;
+    });
+
+    document.getElementById('landingClear').addEventListener('click', ()=>{ document.getElementById('landingSymptomInput').value=''; document.getElementById('landingAnalysisResult').innerHTML='<div class="small">Result will appear here after analysis</div>'; });
+
+    document.getElementById('landingExplain').addEventListener('click', ()=>{ const t = document.getElementById('landingSymptomInput').value.trim(); if(!t) return alert('Type symptoms'); const res = analyzeSymptoms(t); alert('Diagnosis Explanation:\n\n'+res.diag+'\n\n'+res.advice); });
+
+
+    const landingMic = document.getElementById('landingMic');
+    if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
+      const Rec = window.SpeechRecognition || window.webkitSpeechRecognition;
+      const rec = new Rec(); rec.lang='en-IN'; rec.continuous=false; rec.interimResults=false;
+      landingMic.addEventListener('click', ()=>{ try{ rec.start(); landingMic.textContent='Listening...'; }catch(e){ alert('Mic not available') } });
+      rec.onresult = (ev)=>{ const t = ev.results[0][0].transcript; document.getElementById('landingSymptomInput').value = document.getElementById('landingSymptomInput').value + ' ' + t; landingMic.textContent='🎤'; }
+      rec.onend = ()=>{ landingMic.textContent='🎤' }
+    } else { landingMic.addEventListener('click', ()=>{ alert('Speech recognition not supported in this browser. Try Chrome.') }) }
+    function generatePrescriptionFromText(text){ const res = analyzeSymptoms(text||''); const rx = { patient: document.getElementById('patientNameDisplay').textContent || 'Guest', date: new Date().toLocaleString(), diagnosis: res.diag, medicines: res.meds.length? res.meds: ['No routine medication — clinician review required'], notes: res.advice }; return rx; }
+
+    document.getElementById('generateRxBtn').addEventListener('click', ()=>{
+      const msgsObj = loadMessages(); const conv = currentChatWith && msgsObj[currentChatWith.id] ? msgsObj[currentChatWith.id] : []; const lastPatient = conv.slice().reverse().find(m=>m.fromRole==='patient'); const sourceText = (lastPatient && lastPatient.text) || document.getElementById('messageInput').value || document.getElementById('landingSymptomInput').value || prompt('Enter symptoms for prescription:') || '';
+      if(!sourceText) return alert('No text provided'); const rx = generatePrescriptionFromText(sourceText);
+      // put into editor
+      document.getElementById('presPatient').value = rx.patient; document.getElementById('presDiagnosis').value = rx.diagnosis; document.getElementById('presMeds').value = rx.medicines.join('\n'); document.getElementById('presNotes').value = rx.notes; renderPresPreview(); showPage('page-prescription');
+    });
+
+  //user interface
+    function renderPresPreview(){ const p = {patient: document.getElementById('presPatient').value, diag: document.getElementById('presDiagnosis').value, meds: document.getElementById('presMeds').value.split('\n').filter(Boolean), notes: document.getElementById('presNotes').value}; document.getElementById('presPreview').innerText = `To: ${p.patient}\nDate: ${new Date().toLocaleString()}\n\nDiagnosis:\n${p.diag}\n\nMedicines:\n${p.meds.map(m=>'- '+m).join('\n')}\n\nNotes:\n${p.notes}`; }
+    document.getElementById('presMeds').addEventListener('input', renderPresPreview); document.getElementById('presDiagnosis').addEventListener('input', renderPresPreview); document.getElementById('presPatient').addEventListener('input', renderPresPreview); document.getElementById('presNotes').addEventListener('input', renderPresPreview);
+
+    document.getElementById('presClear').addEventListener('click', ()=>{ document.getElementById('presPatient').value=''; document.getElementById('presDiagnosis').value=''; document.getElementById('presMeds').value=''; document.getElementById('presNotes').value=''; renderPresPreview(); });
+    document.getElementById('presSaveDraft').addEventListener('click', ()=>{ const drafts = JSON.parse(localStorage.getItem('heallink_prescriptions_v2')||'[]'); drafts.push({patient:document.getElementById('presPatient').value,diag:document.getElementById('presDiagnosis').value,meds:document.getElementById('presMeds').value,notes:document.getElementById('presNotes').value,ts:Date.now()}); localStorage.setItem('heallink_prescriptions_v2', JSON.stringify(drafts)); alert('Draft saved locally'); });
+
+    document.getElementById('presFinalize').addEventListener('click', ()=>{
+      const content = document.getElementById('presPreview').innerText || '';
+      if(!content.trim()){ alert('No prescription to finalize'); return }
+      
+      const msgs = loadMessages(); msgs[currentChatWith.id] = msgs[currentChatWith.id]||[]; msgs[currentChatWith.id].push({fromRole:'doctor',fromName:currentChatWith.name, text:'[Final Prescription]\n'+content, ts:Date.now()}); saveMessages(msgs); renderChat(); alert('Prescription sent to chat'); showPage('page-chat');
+    });
+          
+document.getElementById('presFinalize').addEventListener('click', ()=>{  const content = document.getElementById('presPreview').innerText || '';
+    if (!content.trim()) {
+        alert('No prescription to finalize');
+        return;
+    }
+
+  
+    const msgs = loadMessages();
+    msgs[currentChatWith.id] = msgs[currentChatWith.id] || [];
+    msgs[currentChatWith.id].push({
+        fromRole: 'doctor',
+        fromName: currentChatWith.name,
+        text: '[Final Prescription]\n' + content,
+        ts: Date.now()
+    });
+
+    saveMessages(msgs);
+    renderChat();
+    alert('Prescription sent to chat');
+    showPage('page-chat');
+});
+
+
+let localStream = null;
+document.getElementById('startVideo').addEventListener('click', async ()=>{
+  try{
+    localStream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+    document.getElementById('localVideo').srcObject = localStream;
+  }catch(e){
+    alert('Camera access denied or not available: '+e.message)
+  }
+});
+document.getElementById('stopVideo').addEventListener('click', ()=>{
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
+    document.getElementById('localVideo').srcObject = null;
+    localStream=null
+  }
+});
+
+
+document.getElementById('shareScreen').addEventListener('click', async ()=>{  try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true });
+        document.getElementById('remoteVideo').srcObject = screenStream;
+        
+       
+        screenStream.getVideoTracks()[0].addEventListener('ended', () => {
+            document.getElementById('remoteVideo').srcObject = null;
+        });
+    } catch (e) {
+        alert('Screen share denied or not available: ' + e.message);
+    }
+});
+
+
+    function generateDoctorAutoReply(patientText){ const res = analyzeSymptoms(patientText); const lines = []; lines.push(`Thanks for the details. Based on what you described, ${res.diag}.`); if(res.meds && res.meds.length){ lines.push('Suggested (draft): ' + res.meds.join('; ')); } lines.push(res.advice || 'I recommend a teleconsult for detailed evaluation.'); lines.push('If you want, click "Generate Prescription" to create an e-prescription draft.'); return lines.join('\n\n'); }
+
+    
+    function escapeHtml(s){ return (s+'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br/>'); }
+
+    function initDoctorList(){ const box = document.getElementById('doctorActiveConvos'); if(!box) return; box.innerHTML = doctors.map(d=>`<div class="doctor-card" data-id="${d.id}" style="margin-bottom:8px;padding:8px"><div style="width:40px;height:40px;border-radius:8px;background:linear-gradient(90deg,rgba(255,255,255,0.02),transparent);display:flex;align-items:center;justify-content:center;margin-right:8px">${d.avatar}</div><div style="flex:1"><strong>${d.name}</strong><div class="small">${d.spec} • ${d.exp} yrs</div></div><div><button class="btn" data-id="${d.id}">Open</button></div></div>`).join('');
+    
+      box.querySelectorAll('button').forEach(btn=> btn.addEventListener('click', (e)=>{ const id = btn.dataset.id; const d = doctors.find(x=>x.id===id); if(d){ currentChatWith = d; document.getElementById('chatUser').textContent = 'You'; document.getElementById('chatRole').textContent = 'Patient'; renderChat(); showPage('page-chat'); } }));
+    }
+    initDoctorList();
+
+ 
+    function renderRecentConvos(){ const convBox = document.getElementById('patientRecentConversations'); const msgs = loadMessages(); const keys = Object.keys(msgs); if(!keys.length){ convBox.innerHTML = '<div class="small" style="color:var(--muted)">No conversations</div>'; return } convBox.innerHTML = keys.map(k=>{ const latest = msgs[k].slice(-1)[0]; const doc = doctors.find(d=>d.id===k) || {name:'Doctor'}; return `<div style="padding:8px;border-radius:8px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center"><div><strong>${doc.name}</strong><div class="small" style="color:var(--muted)">${latest? latest.text.slice(0,60): ''}</div></div><div><button class="btn" data-id="${k}">Open</button></div></div>` }).join('');
+      convBox.querySelectorAll('button').forEach(b=> b.addEventListener('click', ()=>{ const id = b.dataset.id; const d = doctors.find(x=>x.id===id); if(d){ currentChatWith = d; document.getElementById('chatUser').textContent = 'You'; document.getElementById('chatRole').textContent = 'Patient'; renderChat(); showPage('page-chat'); } }));
+    }
+    renderRecentConvos();
+
+    
+    setInterval(()=>{ renderReports(); renderRecentConvos(); initDoctorList(); },3000);
+
+
+    document.getElementById('qaSymptoms').addEventListener('click', ()=>{ showPage('page-landing'); document.getElementById('landingSymptomInput').focus(); });
+    document.getElementById('qaBookAppt').addEventListener('click', ()=>{ const name = document.getElementById('patientNameDisplay').textContent || 'Guest'; const dt = new Date(Date.now()+1000*60*60*24).toISOString(); const appts = loadAppts(); appts.push({id:'a'+Date.now(),name,dt,reason:'General consult'}); saveAppts(appts); alert('Appointment (demo) booked for tomorrow'); document.getElementById('patientApptBox').innerHTML = `${new Date(dt).toLocaleString()} — ${name}`; });
+    document.getElementById('qaUploadReport').addEventListener('click', ()=>{ showPage('page-reports'); });
+
+    
+    document.getElementById('patientContinueGuest').addEventListener('click', ()=>{ document.getElementById('patientNameDisplay').textContent = 'Guest'; showPage('page-patient-dashboard'); });
+
+   
+    document.getElementById('toReportsFromPatient').addEventListener('click', ()=>{ showPage('page-reports'); });
+
+    
+    window.addEventListener('load', ()=>{ console.log('HealLink demo ready'); });
+    </script>
+</body>
+
+</html>
