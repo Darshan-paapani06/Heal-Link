@@ -2,7 +2,7 @@
 <%@ page session="true" %>
 <!DOCTYPE html>
 <html>
-<head>
+<head>   
     <title>HealLink Dashboard</title>
     <style>
         body { font-family: Arial; background-color: #f0f6fa; }
